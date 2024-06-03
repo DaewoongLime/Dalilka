@@ -1,0 +1,21 @@
+.weatherDisplay {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .weatherDisplay img {
+    width: 100px; /* Adjust the width as needed */
+    height: 100px; /* Adjust the height as needed */
+  }
+  
+  .weatherDisplay .temperature {
+    font-size: 24px;
+    font-weight: bold;
+    margin-top: 10px;
+  }
+  
+  .weatherDisplay .condition {
+    font-size: 16px;
+    margin-top: 5px;
+  }
