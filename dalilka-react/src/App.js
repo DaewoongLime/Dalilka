@@ -1,9 +1,11 @@
 import './App.css';
-import WeatherPresentation from './WeatherPresentation/WeatherPresentation';
+import WeatherLogic from './WeatherLogic/\bWeatherLogic';
 
 function App() {
   return (
-    <WeatherPresentation />
+    <div>
+    <WeatherLogic />
+    </div>
   );
 }
 

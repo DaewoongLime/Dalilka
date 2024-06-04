@@ -4,12 +4,13 @@
     align-items: center;
   }
   
-  .weatherDisplay img {
-    width: 100px; /* Adjust the width as needed */
-    height: 100px; /* Adjust the height as needed */
+  .weatherDisplay .weatherIcon {
+    width: 30%; /* Adjust the width as needed */
+    height: 30%; /* Adjust the height as needed */
   }
   
   .weatherDisplay .temperature {
+    font-family:Arial, Helvetica, sans-serif;
     font-size: 24px;
     font-weight: bold;
     margin-top: 10px;
