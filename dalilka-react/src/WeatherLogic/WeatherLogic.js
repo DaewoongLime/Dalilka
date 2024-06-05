@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import WeatherPresentation from '../WeatherPresentation/WeatherPresentation';
 
 const apiKey = process.env.REACT_APP_WEATHER_API_KEY;
@@ -16,9 +16,10 @@ function getDate() {
     return [base_date, base_time];
 }
 
-function getWeather(x, y, values) {
+function getWeather(x, y) {
     const [base_date, base_time] = getDate();
-    const url = 'http://apis.data.go.kr/1360000/VilageFcstInfoService_2.0/getUltraSrtNcst'; /*URL*/
+    let url = 'http://apis.data.go.kr/1360000/VilageFcstInfoService_2.0/getUltraSrtNcst'; /*URL*/
+    const values = [];
     const queryParams = new URLSearchParams({
         serviceKey: apiKey,
         pageNo: '1',
@@ -38,46 +39,83 @@ function getWeather(x, y, values) {
         return response.text();
     })
     .then(data => {
-        console.log(data);
         // Parse XML
         const parser = new DOMParser();
         const xmlDoc = parser.parseFromString(data, "text/xml");
         
         // Extract data (example: extracting temperature data)
         const items = xmlDoc.getElementsByTagName('item');
-        for (const i = 0; i < items.length; i++) {
-            const category = items[i].getElementsByTagName('category')[0].textContent;
-            const obsrValue = items[i].getElementsByTagName('obsrValue')[0].textContent;
-          
+        for (let i = 0; i < items.length; i++) {
+            // const category = items[i].getElementsByTagName('category')[0].textContent;
+            const obsrValue = items[i].getElementsByTagName('obsrValue')[0].textContent;          
             values.push(obsrValue);
-            console.log(category, obsrValue);
+            // setValues((prev) => [...prev, obsrValue]);
         }
     })
     .catch(error => {
         console.error('Error:', error);
     });
+
+    url = 'http://apis.data.go.kr/1360000/VilageFcstInfoService_2.0/getUltraSrtFcst';
+    fetch(`${url}?${queryParams}`)
+    .then(response => {
+        if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        return response.text();
+    })
+    .then(data => {
+        // console.log(data);
+        // Parse XML
+        const parser = new DOMParser();
+        const xmlDoc = parser.parseFromString(data, "text/xml");
+        
+        // Extract data (example: extracting temperature data)
+        const items = xmlDoc.getElementsByTagName('item');
+        for (let i = 0; i < items.length; i++) {
+            const category = items[i].getElementsByTagName('category')[0].textContent;
+            if (category === 'SKY') {
+                const fcstValue = items[i].getElementsByTagName('fcstValue')[0].textContent;
+                values.push(fcstValue);
+                // setValues((prev) => [...prev, fcstValue]);
+                break; 
+            }
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+    });
+    return values;
 }
 
 export default function WeatherLogic(props) {
-    let [OK, PTY, REH, RN1, T1H, UUU, VEC, VVV, WSD] = [false, -1, -1, -1, -1, -1, -1, -1, -1];
-    const values = [];
-    getWeather('64', '104', values);
-    if (values.length == 8) {
-        [PTY, REH, RN1, T1H, UUU, VEC, VVV, WSD] = [true, ...values];
-    };
+    const [location, setLocation] = useState({ latitude: null, longitude: null });
+    const [error, setError] = useState(null);
 
-    // http://apis.data.go.kr/1360000/VilageFcstInfoService_2.0/getUltraSrtFcst
+    useEffect(() => {
+        if (navigator.geolocation) {
+          navigator.geolocation.getCurrentPosition(
+            (position) => {
+              setLocation({
+                latitude: position.coords.latitude,
+                longitude: position.coords.longitude,
+              });
+            },
+            (error) => {
+              setError(error.message);
+            }
+          );
+        } else {
+          setError('Geolocation is not supported by this browser.');
+        }
+    }, []);
+    console.log(location.latitude, location.longitude);
 
-    // T1H = temp 4
-    // RN1 = 1시간 강수량 3 
-    // SKY = 하늘 상태
-    // UUU = 동서바람성분 5 
-    // VVV = 남북바람성분 7
-    // REH = 습도 2
-    // PTY = 강수형태 1
-    // LGT = 낙뢰값
-    // VEC = 풍향 6
-    // WSD = 풍속 8
+    let [PTY, REH, RN1, T1H, UUU, VEC, VVV, WSD, SKY] = getWeather('64', '104');
+    if (SKY === undefined) {SKY = -1};
+    console.log([PTY, REH, RN1, T1H, UUU, VEC, VVV, WSD, SKY]);
 
-    return (<WeatherPresentation ok={OK} temperature={T1H} condition={PTY} />);
+    return (<WeatherPresentation pty={PTY} 
+        reh={REH} rn1={RN1} t1h={T1H} uuu={UUU} 
+        vec={VEC} vvv={VVV} wsd={WSD} sky={SKY} />);
 }
