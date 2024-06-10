@@ -16,6 +16,7 @@ function getDate() {
     return [base_date, base_time];
 }
 
+// this should go into backend
 function getWeather(x, y) {
     const [base_date, base_time] = getDate();
     let url = 'http://apis.data.go.kr/1360000/VilageFcstInfoService_2.0/getUltraSrtNcst'; /*URL*/

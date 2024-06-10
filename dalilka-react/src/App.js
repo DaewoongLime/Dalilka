@@ -1,10 +1,12 @@
 import './App.css';
+import MyNavbar from './MyNavBar/MyNavBar';
 import WeatherLogic from './WeatherLogic/\bWeatherLogic';
 
 function App() {
   return (
     <div>
-    <WeatherLogic />
+      <MyNavbar />
+      <WeatherLogic />
     </div>
   );
 }
