@@ -1,0 +1,28 @@
+.sidebar {
+    width: 25vh;
+    height: 100vh;
+    position: relative;
+    top: 0;
+    left: 0;
+    background-color: #343a40;
+    color: white;
+    padding: 20px;
+    z-index: 1000;
+  }
+
+  .flexColumn {
+    display: flex;
+    flex-direction: column;
+    background-color: transparent; /* Example background color */
+    color: white; /* Example text color */
+  }
+
+  .navLink {
+    color: white;
+    margin: 10px 0;
+  }
+ 
+  .navLink:hover, .navLink:focus {
+    background-color: #495057;
+    color: grey;
+  }
